@@ -36,11 +36,14 @@ class ViewController: UIViewController,
     // Exercise 1: Move the kart forward past the edge of the screen
     // Tip: Use the `translate` function below
     // YOUR CODE HERE
-      translate(kart: sender.view, by: view.frame.width) // move the kart forward by the width of the containing view
+      translate(kart: sender.view, by: view.frame.width){
+          self.translate(kart: sender.view, by: -self.view.frame.width)
+      } // move the kart forward by the width of the containing view
     // Exercise 6: Move the kart back to its original position after you've moved it off the screen
     // Tip: Change your usage of the `translate` function to
     // use the optional completion closure
     // YOUR CODE HERE
+      
   }
   
   private func translate(kart: UIView?,
@@ -122,10 +125,11 @@ class ViewController: UIViewController,
   }
   
   // Called whenever the view becomes visible on the screen
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
-  }
-  
+    override func viewDidAppear(_ animated: Bool) {
+      super.viewDidAppear(animated) // since we're overriding this from the super class, we should call the super class implementation
+      runStartingAnimationsAllAtOnce()
+    }
+
   private func getKartReadyToRace(kart: UIImageView,
                                   completion: (() -> Void)? = nil) {
     UIView.animateKeyframes(
@@ -143,12 +147,26 @@ class ViewController: UIViewController,
   // Tip: Use `getKartReadyToRace`
   private func runStartingAnimationsAllAtOnce() {
     // YOUR CODE HERE
+    getKartReadyToRace(kart: kartView0)
+    getKartReadyToRace(kart: kartView1)
+    getKartReadyToRace(kart: kartView2)
   }
   
+    
   // Exercise 8: Animate all karts one-by-one
   // Tip: Use `getKartReadyToRace` and its completion closure
   private func runStartingAnimationsOneByOne(completion: (() -> Void)? = nil) {
     // YOUR CODE HERE
+      getKartReadyToRace(kart: kartView0) { // animate kartView0 first
+          self.getKartReadyToRace(kart: self.kartView1) { // ...then kartView1
+            self.getKartReadyToRace(kart: self.kartView2) { // ...then kartView2
+              // runStartingAnimationsOneByOne also takes in an optional completion closure
+              // so we'll go ahead and execute that closure only after the three animations are done
+              // we use '?' since this argument is an optional (we'll talk about them in the next unit)
+              completion?()
+            }
+          }
+        }
   }
   
   // Exercise 9: Have the karts race all at once to the finish line!
